@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class VINGeneration {
 
-    private static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String upper = "ABCDEFGHJKLMNPRSTUVWXYZ";
     private static final String digits = "0123456789";
     private static final String symbols = upper + digits;
 
@@ -29,7 +27,25 @@ public class VINGeneration {
     }
 
     public static String generateVIN() {
-        return generateWMI() + generateVDS() + generateVIS();
+        String tempVIN = generateWMI() + generateVDS() + generateVIS();
+        return checkDigit(tempVIN);
+    }
+
+    private static String checkDigit(String tempVIN) {
+        int[] lettersNums = {1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 7, 9, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] weights = {8, 7, 6, 5, 4, 3, 2, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+        int sum = 0;
+        char[] clearVIN = tempVIN.replace("checkDigit", "").toCharArray();
+        for (int i = 0; i < clearVIN.length; i++) {
+            if (digits.indexOf(clearVIN[i]) >= 0) {
+                sum += Integer.parseInt(String.valueOf(clearVIN[i])) * weights[i];
+            } else {
+                sum += lettersNums[upper.indexOf(clearVIN[i])] * weights[i];
+            }
+        }
+        Integer result = sum % 11;
+        String symbol = result == 10 ? "X" : result.toString();
+        return tempVIN.replace("checkDigit", symbol);
     }
 
     private static String generateWMI() {
@@ -68,7 +84,7 @@ public class VINGeneration {
                 int randomCharacterNumber = (int) (Math.random() * symbols.length());
                 builder.append(symbols.charAt(randomCharacterNumber));
             }
-            builder.append("X");
+            builder.append("checkDigit");
 
             return builder.toString();
         } catch (StringIndexOutOfBoundsException e) {
@@ -83,11 +99,11 @@ public class VINGeneration {
             StringBuilder builder = new StringBuilder();
             builder.append(lettersForYear.charAt(yearOffset % lettersForYear.length()));
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 1; i++) {
                 int randomCharacterNumber = (int) (Math.random() * symbols.length());
                 builder.append(symbols.charAt(randomCharacterNumber));
             }
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 6; i++) {
                 int randomCharacterNumber = (int) (Math.random() * digits.length());
                 builder.append(digits.charAt(randomCharacterNumber));
             }
