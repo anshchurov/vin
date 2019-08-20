@@ -1,5 +1,6 @@
 package ru.aplana.XAKATOH.controller;
 
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,9 +39,11 @@ public class VINController extends BaseController {
         return new String(buf);
     }
 
-    @RequestMapping(value = "/getVIN", method = {GET, POST})
+    @RequestMapping(value = "/getVIN", method = {GET, POST}, produces = "application/json")
     @ResponseBody
     public String getVIN(){
-        return VINGeneration.generateVIN();
+        JSONObject json = new JSONObject();
+        json.put("VIN", VINGeneration.generateVIN());
+        return json.toString();
     }
 }
